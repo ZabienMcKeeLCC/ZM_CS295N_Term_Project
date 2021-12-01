@@ -1,0 +1,42 @@
+﻿@model ForumPostModel;
+@{
+    ViewData["Title"] = "Browser";
+}
+<div class="text-center">
+    <h1>Forum Browser</h1><hr />
+
+    <a asp-controller="Forum" asp-action="WritePost" asp-route-id="Forum">Post a question</a>
+
+    @foreach (ForumPostModel comment in (List<ForumPostModel>)ViewBag.comments)
+
+    {
+
+        <div class="card border bg-light row">
+
+            <a asp-controller="Forum" asp-action="ForumPost" asp-route-id="Forum" asp-route-postId=@comment.PostId>
+                <p>@comment.Title</p>
+            </a>
+            <p>Posted At: @comment.Date</p>
+            <form asp-controller="Forum" asp-action="DeletePost" asp-route-postId="@comment.PostId" method="post">
+                <button type="submit" class="btn btn-primary btn-sm">Remove</button>
+            </form>
+        </div>
+    }
+</div>
+<!--
+<h2>Replies</h2>
+@foreach (ForumReplyModel reply in (List<ForumReplyModel>)ViewBag.replies)
+{
+    <p>
+        <div class="card border bg-light row">
+            @reply.ReplyId|@reply.PostId
+            @reply.Username
+            @reply.Message
+            <p>Posted At: @reply.Date</p>
+            <form asp-controller="Forum" asp-action="DeleteReply" asp-route-id="ForumDelete" asp-route-replyId=@reply.ReplyId method="post">
+                <button type="submit" class="btn btn-primary btn-sm">Remove</button>
+            </form>
+        </div>
+    </p>
+}
+    -->

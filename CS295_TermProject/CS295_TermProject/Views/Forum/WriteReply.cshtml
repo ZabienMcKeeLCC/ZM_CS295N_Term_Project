@@ -1,0 +1,29 @@
+﻿
+@model ForumPostModel
+@{
+    ViewData["Title"] = "WriteReply";
+}
+
+<h1>Post a Question</h1>
+@ViewBag.Post.PostId
+<form asp-action="WriteReply" asp-route-postId=@ViewBag.Post.PostId method="post" style="background-color:lightgray">
+    <div class="container">
+        <div class="row p-3 m-2">
+
+            <div>
+                <label asp-for="Username">Username: </label>
+                <input asp-for="Username" />
+            </div>
+
+            <div>
+                <div class="m-3">
+                    <label asp-for="Message">Message: </label><br />
+                    <textarea asp-for="Message" cols="100"> </textarea>
+                </div>
+            </div>
+
+        </div>
+        <button type="submit" class="btn btn-primary btn-md" style="text-align:center">Submit</button>
+    </div>
+    
+</form>
