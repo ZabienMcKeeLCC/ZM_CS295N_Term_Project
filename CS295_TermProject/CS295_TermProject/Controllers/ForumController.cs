@@ -1,4 +1,5 @@
-﻿using CS295_TermProject.Models;
+﻿using CS295_TermProject.Interfaces;
+using CS295_TermProject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,29 +13,31 @@ namespace CS295_TermProject.Controllers
 {
     public class ForumController : Controller
     {
-        private PostContext postContext { get; set; }
         private ReplyContext replyContext { get; set; }
+        private IPostRepository postRepo { get; set; }
+        private IReplyRepository replyRepo { get; set; }
 
-        public ForumController(PostContext postCtx, ReplyContext replyCtx)
+        public ForumController(PostRepository postCtx, ReplyRepository replyCtx)
         {
-            postContext = postCtx;
-            replyContext = replyCtx;
+            postRepo = postCtx;
+            replyRepo = replyCtx;
         }
 
         [HttpGet]
         public IActionResult Browser()
         {
             //List<ForumPostModel> comments = ForumDB.GetMessages();
-            ViewBag.replies = replyContext.replies.ToList();
-            ViewBag.comments = postContext.posts.ToList();
+            //ViewBag.replies = replyContext.replies.ToList();
+            ViewBag.comments = postRepo.SelectAll();
             return View();
         }
+
         [HttpPost]
         public IActionResult Browser(ForumPostModel model)
         {
 
-            ViewBag.replies = replyContext.replies.ToList();
-            ViewBag.comments = postContext.posts.ToList();
+            //ViewBag.replies = replyContext.replies.ToList();
+            ViewBag.comments = postRepo.SelectAll();
             return View(model);
         }
 
@@ -52,12 +55,13 @@ namespace CS295_TermProject.Controllers
             {
                 model.Date = clock.ToString();
 
-                postContext.posts.Add(model);
-                postContext.SaveChanges();
+                postRepo.Insert(model);
+                postRepo.Save();
             }
                 
                 return RedirectToAction("Browser");
         }
+
         //Page that displays actual post
         [HttpGet]
         public IActionResult ForumPost(int postId)
@@ -65,7 +69,7 @@ namespace CS295_TermProject.Controllers
             List<ForumReplyModel> allReplies = replyContext.replies.ToList();
             List<ForumReplyModel> linkedReplies = new List<ForumReplyModel>();
             ViewBag.Id = postId;
-            ViewBag.Post = postContext.posts.Find(postId);
+            ViewBag.Post = postRepo.SelectById(postId);
             
             foreach(ForumReplyModel reply in allReplies)
             {
@@ -93,8 +97,11 @@ namespace CS295_TermProject.Controllers
             {
                 postModel.Date = clock.ToString();
                 postModel.PostId = postId;
-                replyContext.replies.Add(postModel);
-                replyContext.SaveChanges();
+                //replyContext.replies.Add(postModel);
+                //replyContext.SaveChanges();
+                replyRepo.Insert(postModel);
+                replyRepo.Save();
+
             }
 
             return RedirectToAction("Browser");
@@ -110,7 +117,7 @@ namespace CS295_TermProject.Controllers
         [HttpGet]
         public IActionResult DeletePost(int postId)
         {
-            var post = postContext.posts.Find(postId);
+            var post = postRepo.SelectById(postId);
             return View(post);
         }
 
@@ -118,28 +125,30 @@ namespace CS295_TermProject.Controllers
         public IActionResult DeletePost(ForumPostModel post)
         {
             DeleteReplyByPostId(post.PostId);
-            postContext.posts.Remove(post);
-            postContext.SaveChanges();
+            postRepo.Delete(post);
+            postRepo.Save();
             return RedirectToAction("Browser");
         }
         [HttpGet]
         public IActionResult DeleteReply(int replyId)
         {
-            var post = postContext.posts.Find(replyId);
+            var post = postRepo.SelectById(replyId);
             return View(post);
         }
 
         [HttpPost]
         public IActionResult DeleteReply(ForumReplyModel reply)
         {
-            replyContext.replies.Remove(reply);
-            replyContext.SaveChanges();
+            //replyContext.replies.Remove(reply);
+            //replyContext.SaveChanges();
+            replyRepo.Delete(reply);
+            replyRepo.Save();
             return RedirectToAction("Browser");
         }
 
         public IActionResult DeleteReplyByPostId(int postId)
         {
-            foreach(ForumReplyModel reply in replyContext.replies.ToList())
+            foreach(ForumReplyModel reply in replyRepo.SelectAll())
             {
                 if(reply.PostId == postId)
                 {
