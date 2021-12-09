@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace CS295_TermProject.Interfaces
 {
-    interface IPostRepository
+    public interface IPostRepository
     {
 
         IEnumerable<ForumPostModel> SelectAll();
         void Insert(ForumPostModel obj);
         ForumPostModel SelectById(int id);
         void Delete(ForumPostModel obj);
+        public IEnumerable<ForumPostModel> SelectWithFilter(string filter);
         void Save();
 
     }

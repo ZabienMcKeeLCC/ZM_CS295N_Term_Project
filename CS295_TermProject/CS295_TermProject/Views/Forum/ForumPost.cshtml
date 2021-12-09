@@ -23,7 +23,7 @@
         <div class="card border bg-light row">
           <!---  @reply.ReplyId|@reply.PostId -->
             
-            @reply.Username
+            <b>@reply.Username: </b>
             @reply.Message
             <p>Posted At: @reply.Date</p>
             <form asp-controller="Forum" asp-action="DeleteReply" asp-route-id="ForumDelete" asp-route-replyId=@reply.ReplyId method="post">

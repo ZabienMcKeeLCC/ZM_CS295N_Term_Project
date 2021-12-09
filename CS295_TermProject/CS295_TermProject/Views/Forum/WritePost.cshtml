@@ -11,18 +11,23 @@
 
             <div>
                 <label asp-for="Username">Username: </label>
-                <input asp-for="Username" />
+                @Html.TextBoxFor(m => m.Username,
+            new { @class = "form-control", required = "required" })
             </div>
 
             <div>
                 <label asp-for="Title">Title: </label>
-                <input asp-for="Title" />
+                @Html.TextBoxFor(m => m.Title,
+            new { @class = "form-control", required = "required", @style = "width:300px;" })
             </div>
 
             <div>
                 <div class="m-3">
+                    <br /> 
                     <label asp-for="Message">Message: </label><br />
-                    <textarea asp-for="Message" cols="100"> </textarea>
+                    @Html.TextAreaFor(m => m.Message,
+            new { @class = "form-control", required = "required",
+            @cols = "100", @rows = "8", @style = "width:100%;" })
                 </div>
             </div>
 

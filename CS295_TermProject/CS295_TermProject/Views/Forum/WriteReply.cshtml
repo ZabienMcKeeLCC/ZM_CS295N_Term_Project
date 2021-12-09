@@ -4,21 +4,29 @@
     ViewData["Title"] = "WriteReply";
 }
 
-<h1>Post a Question</h1>
-@ViewBag.Post.PostId
+<h1>Write a Reponse</h1>
 <form asp-action="WriteReply" asp-route-postId=@ViewBag.Post.PostId method="post" style="background-color:lightgray">
     <div class="container">
         <div class="row p-3 m-2">
 
             <div>
                 <label asp-for="Username">Username: </label>
-                <input asp-for="Username" />
+                @Html.TextBoxFor(m => m.Username,
+            new { @class = "form-control", required = "required" })<br />
             </div>
 
             <div>
-                <div class="m-3">
+                <div>
                     <label asp-for="Message">Message: </label><br />
-                    <textarea asp-for="Message" cols="100"> </textarea>
+                    @Html.TextAreaFor(m => m.Message,
+            new
+                 {
+                     @class = "form-control",
+                     required = "required",
+            @cols = "100",
+                     @rows = "8",
+                     @style = "width:100%;"
+                 })
                 </div>
             </div>
 

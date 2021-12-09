@@ -13,11 +13,11 @@ namespace CS295_TermProject.Controllers
 {
     public class ForumController : Controller
     {
-        private ReplyContext replyContext { get; set; }
-        private IPostRepository postRepo { get; set; }
-        private IReplyRepository replyRepo { get; set; }
+        //private ReplyContext replyContext { get; set; }
+        private IPostRepository postRepo;
+        private IReplyRepository replyRepo;
 
-        public ForumController(PostRepository postCtx, ReplyRepository replyCtx)
+        public ForumController(IPostRepository postCtx, IReplyRepository replyCtx)
         {
             postRepo = postCtx;
             replyRepo = replyCtx;
@@ -27,18 +27,25 @@ namespace CS295_TermProject.Controllers
         public IActionResult Browser()
         {
             //List<ForumPostModel> comments = ForumDB.GetMessages();
-            //ViewBag.replies = replyContext.replies.ToList();
+            ViewBag.Search = "";
+            ViewBag.replies = replyRepo.SelectAll();
             ViewBag.comments = postRepo.SelectAll();
             return View();
         }
 
         [HttpPost]
-        public IActionResult Browser(ForumPostModel model)
+        public IActionResult Browser(string search = "")
         {
-
-            //ViewBag.replies = replyContext.replies.ToList();
+            if (!string.IsNullOrEmpty(search))
+            {
+                ViewBag.comments = postRepo.SelectWithFilter(search).ToList();
+                var returnList = ViewBag.comments;
+                return View(returnList);
+            }
+            ViewBag.Search = search;
+            ViewBag.replies = replyRepo.SelectAll();
             ViewBag.comments = postRepo.SelectAll();
-            return View(model);
+            return View(search);
         }
 
         [HttpGet]
@@ -59,14 +66,14 @@ namespace CS295_TermProject.Controllers
                 postRepo.Save();
             }
                 
-                return RedirectToAction("Browser");
+                return RedirectToAction("ForumPost",model);
         }
 
         //Page that displays actual post
         [HttpGet]
         public IActionResult ForumPost(int postId)
         {
-            List<ForumReplyModel> allReplies = replyContext.replies.ToList();
+            List<ForumReplyModel> allReplies = (List < ForumReplyModel >)replyRepo.SelectAll();
             List<ForumReplyModel> linkedReplies = new List<ForumReplyModel>();
             ViewBag.Id = postId;
             ViewBag.Post = postRepo.SelectById(postId);
@@ -104,7 +111,7 @@ namespace CS295_TermProject.Controllers
 
             }
 
-            return RedirectToAction("Browser");
+            return RedirectToAction("ForumPost",postModel);
         }
 
 
@@ -124,16 +131,17 @@ namespace CS295_TermProject.Controllers
         [HttpPost]
         public IActionResult DeletePost(ForumPostModel post)
         {
-            DeleteReplyByPostId(post.PostId);
             postRepo.Delete(post);
+            DeleteReplyByPostId(post.PostId);
+            
             postRepo.Save();
             return RedirectToAction("Browser");
         }
         [HttpGet]
         public IActionResult DeleteReply(int replyId)
         {
-            var post = postRepo.SelectById(replyId);
-            return View(post);
+            var reply = replyRepo.SelectById(replyId);
+            return View(reply);
         }
 
         [HttpPost]
@@ -141,6 +149,7 @@ namespace CS295_TermProject.Controllers
         {
             //replyContext.replies.Remove(reply);
             //replyContext.SaveChanges();
+            ForumPostModel temp = postRepo.SelectById(reply.PostId);
             replyRepo.Delete(reply);
             replyRepo.Save();
             return RedirectToAction("Browser");

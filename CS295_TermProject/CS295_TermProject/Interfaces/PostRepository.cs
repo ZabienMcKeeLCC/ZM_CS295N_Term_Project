@@ -31,12 +31,31 @@ namespace CS295_TermProject.Interfaces
 
         public IEnumerable<ForumPostModel> SelectAll()
         {
-            return ctx.posts.ToList();
+            var list = ctx.posts.OrderByDescending(m => m.Date).ToList();
+            if(list == null)
+            {
+                return new List<ForumPostModel>();
+            }
+            return list;
         }
 
         public ForumPostModel SelectById(int id)
         {
             return ctx.posts.Find(id);
+        }
+
+        public IEnumerable<ForumPostModel> SelectWithFilter(string filter)
+        {
+            IEnumerable<ForumPostModel> posts;
+            if (!String.IsNullOrEmpty(filter))
+            {
+                 posts = ctx.posts.Where(s => s.Title.ToLower().Contains(filter.ToLower())).AsEnumerable();
+            }
+            else
+            {
+                posts = ctx.posts.ToList();
+            }
+            return posts;
         }
     }
 }

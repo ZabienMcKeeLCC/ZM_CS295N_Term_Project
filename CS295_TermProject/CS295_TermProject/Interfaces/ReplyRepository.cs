@@ -31,6 +31,7 @@ namespace CS295_TermProject.Interfaces
 
         public IEnumerable<ForumReplyModel> SelectAll()
         {
+            
             return ctx.replies.ToList();
         }
 

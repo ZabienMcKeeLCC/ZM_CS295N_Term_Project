@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CS295_TermProject.Interfaces
 {
-    interface IReplyRepository
+    public interface IReplyRepository
     {
         IEnumerable<ForumReplyModel> SelectAll();
         void Insert(ForumReplyModel obj);
